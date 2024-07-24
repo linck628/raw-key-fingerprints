@@ -19,35 +19,29 @@
 # Change the file extension to match the format (.xml for XML, etc...)
 #
 ###
-title: "TODO - Your title"
-abbrev: "TODO - Abbreviation"
-category: info
+title: "Session Description Protocol Fingerprints for Raw Public Keys in Transport Layer Security"
+abbrev: "SDP Fingerprints for Raw Public Keys in TLS"
+category: std
 
-docname: draft-todo-yourname-protocol-latest
+docname: draft-lennox-raw-key-fingerprints-latest
 submissiontype: IETF  # also: "independent", "editorial", "IAB", or "IRTF"
 number:
 date:
 consensus: true
 v: 3
 area: AREA
-workgroup: WG Working Group
 keyword:
- - next generation
- - unicorn
- - sparkling distributed ledger
+ - sdp
+ - fingerprints
+ - raw public keys
 venue:
-  group: WG
-  type: Working Group
-  mail: WG@example.com
-  arch: https://example.com/WG
-  github: USER/REPO
-  latest: https://example.com/LATEST
+  github: JonathanLennox/draft-lennox-raw-key-fingerprints
 
 author:
  -
-    fullname: Your Name Here
-    organization: Your Organization Here
-    email: your.email@example.com
+    fullname: Jonathan Lennox
+    organization: 8x8, Inc / Jitsi
+    email: jonathan.lennox@8x8.com
 
 normative:
 
