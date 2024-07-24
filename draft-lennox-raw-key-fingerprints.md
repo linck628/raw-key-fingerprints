@@ -9,13 +9,13 @@ number:
 date:
 consensus: true
 v: 3
-area: AREA
+area: "Routing"
 keyword:
  - sdp
  - fingerprints
  - raw public keys
 venue:
-  github: JonathanLennox/draft-lennox-raw-key-fingerprints
+  github: "JonathanLennox/raw-key-fingerprints"
 
 author:
  -
