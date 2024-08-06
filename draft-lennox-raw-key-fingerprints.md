@@ -67,8 +67,8 @@ support using raw keys, rather than X.509 certificates, in
 circumstances such as these {{!RFC7250}}.  This document defines how such raw key
 certificates can be negotiated in SDP.
 
-TODO: give figures on how much larger certs are than raw keys, both
-for current EC-based ones and for PQ.
+> TODO: give figures on how much larger certs are than raw keys, both
+> for current EC-based ones and for PQ.
 
 
 # Conventions and Definitions
@@ -96,7 +96,7 @@ raw-key-fingerprint-attribute = \
 
 A raw key fingerprint is a secure one-way hash of the distinguished
 Encoding Rules (DER) form of the raw key, in the form specified in
-{{Section 3 of !RFC7050}} when the appropriate certificate_type
+{{Section 3 of !RFC7250}} when the appropriate certificate_type
 value is RawPublicKey.
 
 As in {{!RFC8122}}, the raw key fingerprint is represented as
@@ -161,11 +161,29 @@ signaled in SDP matches that of the raw public key received in SDP,
 and terminate the TLS or DTLS connection with a bad_certificate error
 if not.  Note that in some circumstances a ClientHello or ServerHello
 may outrace an SDP answer; application data MUST NOT be sent over the
-TLS connection until the fingerprint has been received and validated.
+TLS connection until the raw key fingerprint has been received and
+validated.
 
 If multiple raw key fingerprints are present, a certificate is valid
-if at least one fingerprint is valid using a hash function that the
-entity considers sufficiently secure.
+if at least one raw key fingerprint matches the raw key using a hash
+function that the entity considers sufficiently secure.
+
+If a remote SDP offer or answer does not contain a "raw-key-fingerprint"
+attribute, and TLS does not contain a CertTypeExtension, then the peer
+does not support (or does not wish to use) raw keys in fingerprints,
+and the standard procedures of {{!RFC8122}} MUST be used instead.
+
+If an SDP offer or answer is inconsistent with TLS messaging (e.g., a
+CertType of X509 is provided when SDP contained only
+"raw-key-fingerprint" attributes, or a CertType of RawPublicKey when SDP
+contained only "fingerprint" attributes), then the TLS connection MUST
+be terminated with a bad_certificate error.
+
+> TODO: Do we want to support asymmetric cases, where one endpoint is
+> willing to receive raw keys but cannot present one?  This would be
+> relatively straightforward for answerers, but would require an
+> additional SDP attribute for an offerer to indicate its willingness
+> to receive a raw key.
 
 ## SDP Advertisements
 
@@ -219,8 +237,8 @@ certificate fingerprints.
 Nonetheless, both of these mechanisms could easily be extended so as
 to secure raw key fingerprints as well.
 
-TODO: Should we actually define these extensions?  Is it worth the
-trouble?
+> TODO: Should we actually define these extensions?  Is it worth the
+> trouble?
 
 # Security Considerations
 
