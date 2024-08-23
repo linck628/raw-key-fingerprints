@@ -30,21 +30,9 @@ informative:
 
 --- abstract
 
-When a Transport-Layer Security or Datagram Transport-Layer Security
-connection is negotiated using the Session Desccription Protocol,
-certificates are validated using certificate fingerprints specified in
-the SDP, rather than by any information carried in the certificate.
-Typically these certificates are self-signed.
-The only information carried in these certificates that is used by the
-process are the public keys; the rest of the information is useless.
-This other information can be large, and once post-quantum
-public keys are needed, the self-signed signature in particular will
-be very large.
-
-Transport-Layer Security (and Datagram Transport-Layer Security) now
-support using raw keys, rather than X.509 certificates, in
-circumstances such as these.  This document defines how such raw key
-certificates can be negotiated in SDP.
+This document defines how to negotiate the use of raw keys for TLS and DTLS
+with the Session Description Protocol (SDP). Raw keys are more efficient
+than certificates for typical uses of SDP.
 
 --- middle
 
@@ -52,7 +40,7 @@ certificates can be negotiated in SDP.
 
 When a Transport-Layer Security {{!RFC8446}} {{!RFC5246}} or Datagram
 Transport-Layer Security {{!RFC9147}} {{!RFC6347}}
-connection is negotiated using the Session Desccription Protocol {{!RFC8866}},
+connection is negotiated using the Session Description Protocol {{!RFC8866}},
 certificates are validated using certificate fingerprints specified in
 the SDP {{!RFC8122}}, rather than by any information carried in the certificate.
 Typically these certificates are self-signed.
