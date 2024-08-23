@@ -67,8 +67,8 @@ certificates can be negotiated in SDP.
 
 ## The "raw-key-fingerprint" attribute. {#sdp-attribute}
 
-This document defines an SDP attribute, "raw-key-fingerprint".  The
-content of its syntax is the same as the "fingerprint" attribute defined in
+This document defines an SDP attribute, "raw-key-fingerprint".
+Its syntax is the same as the "fingerprint" attribute defined in
 {{!RFC8122}}, as specified in {{figabnf}}.
 
 ~~~~~~~~~~
@@ -83,12 +83,21 @@ raw-key-fingerprint-attribute = \
 {: #figabnf title="ABNF for the raw-key-fingerprint attribute"}
 
 A raw key fingerprint is a secure one-way hash of the distinguished
-Encoding Rules (DER) form of the raw key, in the form specified in
-{{Section 3 of !RFC7250}} when the appropriate certificate_type
-value is RawPublicKey.
+Encoding Rules (DER) form of the subjectPublicKeyInfo (SPKI) of the
+raw key, in the form specified in {{Section 3 of !RFC7250}} when the
+appropriate certificate_type value is RawPublicKey.
 
-As in {{!RFC8122}}, the raw key fingerprint is represented as
-upper-case hexidecimal bytes, separated by colons.  The number of
+> The subjectPublicKeyInfo structure encodes the key type as well as
+> its value, so the meaning of the key is unambiguous.
+
+The one-way hash is performed using the hash function specified in the
+'hash-func' field, which MUST be a hash function from the IANA table
+"Hash Function Textual Names" defined in {{!RFC8122}}, with 'SHA-256'
+preferred.  As in {{!RFC8122}}, the hash functions 'MD2' and 'MD5'
+MUST NOT be used either for generating or verifying raw key fingerprints.
+
+Also as in {{!RFC8122}}, the raw key fingerprint is represented as
+upper-case hexadecimal bytes, separated by colons.  The number of
 bytes is defined by the hash function.
 
 
@@ -115,9 +124,11 @@ a fingerprint hashed with multiple different hash functions, or if the
 media negotiated by the offer/answer might end up at one of several
 different endpoints which have different public keys.
 
-In subsequent offers, an offerer MUST send the same
-"raw-key-fingerprint" value as long as the same TLS/DTLS session
-remains.  It MAY omit "fingerprint" attributes
+In subsequent offers, an offerer MUST send the
+"raw-key-fingerprint" value of the raw public key that it used in the
+TLS/DTLS session as long as that TLS/DTLS session
+remains.  It MAY omit "fingerprint" attributes, and
+"raw-key-fingerprint" attributes for unused raw public keys,
 when the state of the connection attribute {{!RFC4145}} is "existing"
 and the value of the raw key fingerprint is unchanged.
 If it sends an offer with "connection:new", or the fingerprint
@@ -139,16 +150,17 @@ If the client has already seen its peer's offer or answer including a
 in the extensions; otherwise, if the client's offer or answer included
 a "fingerprint" attribute, the extension lists MUST also include X509.
 
-The server's ServerHello MUST then sends a ClientCertTypeExtension
+The server's ServerHello MUST then send a ClientCertTypeExtension
 and a ServerCertTypeExtension listing RawPublicKey as the type, as
 well as its own raw public key in the Certificate and a certificate
 request for the client.  The client then sends its own raw key.
 
 Both client and server MUST verify that the raw key fingerprint
-signaled in SDP matches that of the raw public key received in SDP,
+signaled in SDP matches that of the raw public key received over TLS
+or DTLS,
 and terminate the TLS or DTLS connection with a bad_certificate error
-if not.  Note that in some circumstances a ClientHello or ServerHello
-may outrace an SDP answer; application data MUST NOT be sent over the
+if it does not.  Note that in some circumstances a ClientHello or ServerHello
+may arrive before an SDP answer; application data MUST NOT be sent over the
 TLS connection until the raw key fingerprint has been received and
 validated.
 
@@ -157,7 +169,8 @@ if at least one raw key fingerprint matches the raw key using a hash
 function that the entity considers sufficiently secure.
 
 If a remote SDP offer or answer does not contain a "raw-key-fingerprint"
-attribute, and TLS does not contain a CertTypeExtension, then the peer
+attribute, or TLS does not contain a CertTypeExtension containing
+RawPublicKey, then the peer
 does not support (or does not wish to use) raw keys in fingerprints,
 and the standard procedures of {{!RFC8122}} MUST be used instead.
 
@@ -205,10 +218,10 @@ by existing implementations under the normal SDP rules to ignore
 unknown attributes.
 
 This also allows an SDP answerer to include only the
-raw-key-fingerprint attribute, omitting the fingerprint attribute, in
+"raw-key-fingerprint" attribute, omitting the "fingerprint" attribute, in
 its answer if it has seen one in an offer, even if it has not yet seen
 a TLS or DTLS ClientHello containing a CertTypeExtension.  (In the common case
-where DTLS is run over ICE {{?RFC8845}}, as in WebRTC {{?RFC8835}}, a
+where DTLS is run over ICE {{?RFC8445}}, as in WebRTC {{?RFC8835}}, a
 ClientHello architecturally cannot arrive before the SDP answer is
 sent, because the peer does not know the address to send it to.)
 
@@ -259,4 +272,5 @@ This document defines an SDP session and media-level attribute:
 # Acknowledgments
 {:numbered="false"}
 
-TODO acknowledge.
+Thanks to Martin Thomson and Harald Alvestrand for their comments on
+this document.
