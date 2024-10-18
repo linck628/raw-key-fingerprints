@@ -206,6 +206,22 @@ TLS server.  Clients connect using the standard TLS client/server
 procdure. Clients MUST validate that the raw key provided in the
 connection matches the raw key fingerprint in the SDP.
 
+# Possible follow-ons {#follow-ons}
+
+Two protocols have defined mechanisms by which SDP fingerprints can be
+signed to ensure their end-to-end security: PASSPorT {{?RFC8225}} and
+WebRTC Identity Providers {{?RFC8827}}.  Unfortunately, the latter has
+seen no deployment as far as the author is aware; and the former,
+while widely implemented to authenticate calling party telephone
+numbers, has not seen much if any adoption of the mode that signs
+certificate fingerprints.
+
+Nonetheless, both of these mechanisms could easily be extended so as
+to secure raw key fingerprints as well.
+
+> TODO: Should we actually define these extensions?  Is it worth the
+> trouble?
+
 # Design alternatives
 
 As an alternative to a new "a=raw-key-fingerprint" attribute, an
@@ -226,22 +242,6 @@ IANA registry would get complicated.
 
 This would require discussion during the consensus process as this
 mechanism is standardized.
-
-# Possible follow-ons {#follow-ons}
-
-Two protocols have defined mechanisms by which SDP fingerprints can be
-signed to ensure their end-to-end security: PASSPorT {{?RFC8225}} and
-WebRTC Identity Providers {{?RFC8827}}.  Unfortunately, the latter has
-seen no deployment as far as the author is aware; and the former,
-while widely implemented to authenticate calling party telephone
-numbers, has not seen much if any adoption of the mode that signs
-certificate fingerprints.
-
-Nonetheless, both of these mechanisms could easily be extended so as
-to secure raw key fingerprints as well.
-
-> TODO: Should we actually define these extensions?  Is it worth the
-> trouble?
 
 # Security Considerations
 
