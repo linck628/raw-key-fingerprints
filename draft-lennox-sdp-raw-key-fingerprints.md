@@ -3,7 +3,7 @@ title: "Session Description Protocol Fingerprints for Raw Public Keys in (Datagr
 abbrev: "SDP Fingerprints for Raw Keys in (D)TLS"
 category: std
 
-docname: draft-lennox-raw-key-fingerprints-latest
+docname: draft-lennox-sdp-raw-key-fingerprints-latest
 submissiontype: IETF
 number:
 date:
