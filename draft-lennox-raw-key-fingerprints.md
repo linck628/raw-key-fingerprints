@@ -32,14 +32,15 @@ informative:
 
 This document defines how to negotiate the use of raw keys for TLS and DTLS
 with the Session Description Protocol (SDP). Raw keys are more efficient
-than certificates for typical uses of SDP.
+than certificates for typical uses of TLS and DTLS negotiated with
+SDP, without loss of security.
 
 --- middle
 
 # Introduction
 
-When a Transport-Layer Security {{!RFC8446}} {{!RFC5246}} or Datagram
-Transport-Layer Security {{!RFC9147}} {{!RFC6347}}
+When a Transport-Layer Security (TLS) {{!RFC8446}} {{!RFC5246}} or Datagram
+Transport-Layer Security (DTLS) {{!RFC9147}} {{!RFC6347}}
 connection is negotiated using the Session Description Protocol {{!RFC8866}},
 certificates are validated using certificate fingerprints specified in
 the SDP {{!RFC8122}}, rather than by any information carried in the certificate.
@@ -50,13 +51,20 @@ This other information can be large, and once post-quantum
 public keys are needed, the self-signed signature in particular will
 be very large.
 
-Transport-Layer Security (and Datagram Transport-Layer Security) now
+TLS and DTLS now
 support using raw keys, rather than X.509 certificates, in
 circumstances such as these {{!RFC7250}}.  This document defines how such raw key
 certificates can be negotiated in SDP.
 
-> TODO: give figures on how much larger certs are than raw keys, both
-> for current EC-based ones and for PQ.
+## Certificate overheads
+
+As an illustration of the overheads of self-signed certificates, the
+self-signed certificate in a WebRTC DTLS handshake negotiated by a
+recent version of Chrome is 282 bytes, of which only 91 bytes are the
+public key (the subjectPublicKeyInfo in id-ecPublicKey format
+{{?RFC5480}}).
+
+> TODO: calculate equivalent figures for a PQ X.509 certificate
 
 
 # Conventions and Definitions
@@ -110,7 +118,7 @@ includes an SDP "raw-key-fingerprint" attribute describing its raw
 public key at the session level or the appropriate media levels.  In
 an initial offer, it SHOULD also include a valid SDP "fingerprint"
 attribute for a self-signed X.509 certificate as defined in
-{{!RFC8122}}, unless it knows for certain through out-of-bound means
+{{!RFC8122}}, unless it knows for certain through out-of-band means
 that the peer that will be performing the answer definitely supports
 raw keys.
 
@@ -198,32 +206,26 @@ TLS server.  Clients connect using the standard TLS client/server
 procdure. Clients MUST validate that the raw key provided in the
 connection matches the raw key fingerprint in the SDP.
 
-# Design choices
+# Design alternatives
 
-In theory, raw key fingerprints could have been specified as another
-value for the "a=fingerprint:" SDP attribute, rather than defining the
-new SDP attribute "a=raw-key-fingerprint:".  {{!RFC8122}} defines how
-multiple such attributes of that type are to be processed, and if
-implementations followed those recommendations, backward compatibility
-with implementations not implementing this specification would work
-correctly.
+As an alternative to a new "a=raw-key-fingerprint" attribute, an
+alternative signaling mechanism would be to define new values for the
+"hash-func" field of the existing "a=fingerprint" attribute, e.g. the
+"hash-func" value "raw-key-SHA-256" in an "a=fingerprint" attribute
+would mean to use the mechanisms defined in this document.
 
-However, as {{!RFC8122}}'s predecessor {{?RFC4572}} did not specify
-processes for handling multiple fingerprint attributes, and as
-multiple fingerprint attributes are not commonly used, the designers
-of this specification felt that it was uncertain whether all
-implementations would correctly handle multiple fingerprint
-attributes.  Thus, a new attribute was defined, which would be ignored
-by existing implementations under the normal SDP rules to ignore
-unknown attributes.
+This would have the advantage of allowing existing mechanisms that use
+and transport "a=fingerprint" values (both existing code, and
+mechanisms such as those discussed in {{follow-ons}}) to support the
+raw key mechanism, without requiring new code to be written or new
+extension points to be defined.
 
-This also allows an SDP answerer to include only the
-"raw-key-fingerprint" attribute, omitting the "fingerprint" attribute, in
-its answer if it has seen one in an offer, even if it has not yet seen
-a TLS or DTLS ClientHello containing a CertTypeExtension.  (In the common case
-where DTLS is run over ICE {{?RFC8445}}, as in WebRTC {{?RFC8835}}, a
-ClientHello architecturally cannot arrive before the SDP answer is
-sent, because the peer does not know the address to send it to.)
+This would be at the cost of somewhat less clean signaling; and in
+particular, the definition of the "Hash function textual names"
+IANA registry would get complicated.
+
+This would require discussion during the consensus process as this
+mechanism is standardized.
 
 # Possible follow-ons {#follow-ons}
 
