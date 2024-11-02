@@ -64,7 +64,12 @@ recent version of Chrome is 282 bytes, of which only 91 bytes are the
 public key (the subjectPublicKeyInfo in id-ecPublicKey format
 {{?RFC5480}}).
 
-> TODO: calculate equivalent figures for a PQ X.509 certificate
+For the transition to post-quantum keys and signatures, the overhead
+is significantly worse.  For ML-DSA level 3 certificate, described in {{Appendix B of
+?I-D.ietf-lamps-dilithium-certificates}}, public keys are 1952
+bytes, and signatures are 3293 bytes.  Only the public key is useful --
+the signature (along with any other certificate overhead) is wasted
+space.
 
 
 # Conventions and Definitions
@@ -274,5 +279,5 @@ This document defines an SDP session and media-level attribute:
 # Acknowledgments
 {:numbered="false"}
 
-Thanks to Martin Thomson and Harald Alvestrand for their comments on
+Thanks to Martin Thomson, Harald Alvestrand, and Mike Ounsworth for their comments on
 this document.
